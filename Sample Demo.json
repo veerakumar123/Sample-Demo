@@ -1,0 +1,51 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description" : "Sample Development Environment",
+  
+  
+  "Parameters" : {
+    "KeyName" : {
+      "Description" : "Name of an existing EC2 KeyPair to access the instances",
+      "Type" : "AWS::EC2::KeyPair::KeyName",
+      "ConstraintDescription" : "must be the name of an existing EC2 KeyPair."
+    },
+    "SubnetID" : {
+      "Description" : "Subnet Id",
+      "Type" : "String",
+      "Default" : "subnet-a19bf8c4"
+    },
+    "SecurityGroupID" : {
+      "Description" : "SG ID",
+      "Type" : "String",
+      "Default" : "sg-3d7dbe59"
+    }
+    },
+    
+  "Resources" : {
+  
+  "CouchBaseServer": {
+      "Type": "AWS::EC2::Instance",  
+      "Properties": {
+        "Tags" : [
+            { "Key" : "Name", "Value" : { "Fn::Join" : [ "", [ { "Ref": "AWS::StackName"}, "_CouchBaseServer" ]]} }
+        ],
+        "ImageId"            : "ami-47a23a30",
+        "InstanceType"       : "t2.micro",
+        "KeyName"            : { "Ref" : "KeyName" },
+         "NetworkInterfaces" : [{
+          "AssociatePublicIpAddress" : "true",
+          "DeviceIndex"              : "0",
+          "DeleteOnTermination"      : "true",
+          "SubnetId"                 : { "Ref" : "SubnetID" },
+          "GroupSet"                 : [ { "Ref" : "SecurityGroupID" } ]
+        }]
+      }
+    },
+  
+ "Outputs" : {
+  "CouchBaseServerIPAddress" : {
+ "Value" : { "Fn::GetAtt" : [ "CouchBaseServer", "PrivateIp" ]}
+	},
+}
+}
+}
